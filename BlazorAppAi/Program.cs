@@ -1,7 +1,9 @@
 ﻿using BlazorAppAi.Components;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
+using OpenAI;
 using System;
+using System.ClientModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-IChatClient chatClient = new OllamaApiClient(new Uri("http://localhost:11434"),
-    "llama3.2");
+//Ollama chat client.
+//IChatClient chatClient = new OllamaApiClient(new Uri("http://localhost:11434"),
+//    "llama3.2");
+
+// foundry ai chat client.
+ApiKeyCredential key = new ApiKeyCredential("manager.ApiKey");
+OpenAIClient openAIClient = new OpenAIClient(key, new OpenAIClientOptions 
+{ 
+    Endpoint = new Uri("http://localhost:5273/v1")
+});
+
+var chatClient = openAIClient.AsChatClient("deepseek-r1-distill-qwen-7b-cuda-gpu");
 
 builder.Services.AddChatClient(chatClient).UseFunctionInvocation().UseLogging();
 
